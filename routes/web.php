@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FormController;
+use App\Http\Controllers\{FormController, PublicController};
 
 /*
 |--------------------------------------------------------------------------
@@ -20,4 +20,7 @@ Route::get('/', function () {
 
 Auth::routes();
 
+Route::get('public/show-form/{custom_form_id}', [PublicController::class, 'showForm'])->name('public.show-form');
+
+Route::get('forms/create-field', [FormController::class, 'createField']);
 Route::resource('forms', FormController::class);

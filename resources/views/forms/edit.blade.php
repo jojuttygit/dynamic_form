@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Create Form') }}</div>
+                <div class="card-header">{{ __('Edit Form') }}</div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-lg-12 text-right">
@@ -19,18 +19,24 @@
                                 <label for="label" class="col-form-label">Form title</label>
                             </div>
                             <div class="col-lg-4">
-                                <input class="form-control" type="text" name="form_title" placeholder="form title">
+                                <input class="form-control" type="text" name="form_title" placeholder="form title" 
+                                    value="{{$custom_form->name}}">
                                 @error('form_title')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
                         <div id="dynamic-field">
-                            @include('forms.includes.field')
+                        @foreach ($custom_form->customFormField as $custom_form_field)
+                            @php
+                                $form_value = $loop->index + 1;
+                            @endphp
+                            @include('forms.includes.edit_field')
+                        @endforeach
                         </div>
                         <div class="row">
                             <div class="col-lg-10 text-right">
-                                <button class="btn btn-primary" type="submit" id="submit">Submit</button>
+                                <button class="btn btn-primary" type="submit" id="submit">Update</button>
                             </div>
                         </div>
                     </form>
@@ -89,13 +95,15 @@
     }
 
     function changeInFieldType(form_field_value) {
+
+        console.log($("#test1234"));
+
         let field_type_properties = $('#field-type-properties-' + form_field_value);
-        field_type_properties.empty();
         let field_type = $('#field-type-' + form_field_value).val();
         let html = '';
 
         if (field_type == 'select') {
-            html = '<textarea class="form-control" placeholder="Add options separated ' + 
+            html = '<textarea class="form-control" id="field-select-box-options-" ' + form_field_value + ' placeholder="Add options separated ' + 
                 'by comma" name="field_select_box_options[' + form_field_value + ']"></textarea>';
         }
 

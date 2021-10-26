@@ -229,6 +229,12 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        //Models
+
+        'CustomForm' => App\Models\CustomForm::class,
+        'CustomFormField' => App\Models\CustomFormField::class,
+        'CustomFormFieldOption' => App\Models\CustomFormFieldOption::class,
+        'FieldType' => App\Models\FieldType::class,
     ],
 
 ];
