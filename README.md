@@ -3,8 +3,8 @@
 
 ## Requirements
 
-npm 8.0.0
-php 7.4
+- npm 8.0.0
+- php 7.4
 
 ## Package
 
