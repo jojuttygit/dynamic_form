@@ -8,8 +8,8 @@
 
 ## Package
 
-laravel/ui
-sweetalert2
+- laravel/ui
+- sweetalert2
 
 ## Operations
 
