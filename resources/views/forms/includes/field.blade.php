@@ -4,9 +4,7 @@
     </div>
     <div class="col-lg-4">
         <input class="form-control form-field-label" id="{{$form_value}}" type="text" name="labels[{{$form_value}}]" placeholder="field name">
-        @error('labels.' . $form_value)
-            <div class="text-danger">{{ $message }}</div>
-        @enderror
+        <span class="text-danger" id="{{'error-labels.' . $form_value}}"></span>
     </div>
     <div class="col-lg-4">
         <select class="form-control" name="field_types[{{$form_value}}]" onchange="changeInFieldType({{$form_value}})" id="field-type-{{$form_value}}">

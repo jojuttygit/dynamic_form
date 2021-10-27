@@ -22,7 +22,7 @@ class PublicController extends Controller
             ->first();
 
         if ($data['custom_form']) {
-            return view('forms.show', $data);
+            return view('forms.public.show', $data);
         }
 
         return view('welcome');

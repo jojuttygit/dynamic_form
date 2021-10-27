@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-use DB, CustomForm, CustomFormField, CustomFormFieldOption, FieldType, Log;
+use DB, CustomForm, CustomFormField, 
+    CustomFormFieldOption, FieldType, Log;
 
 class FormController extends Controller
 {
@@ -44,7 +45,6 @@ class FormController extends Controller
     public function createField(Request $request)
     {
         $data = [];
-        
         $field_types = FieldType::all();
         $data['field_types'] = $field_types;
         $data['form_value'] = $request->form_value;
@@ -79,15 +79,7 @@ class FormController extends Controller
         $message = 'Fail to create the form';
         $data = [];
 
-        $validator = Validator::make($request->all(), [
-            'form_title' => 'required|string',
-            'field_types' => 'required|array|min:1',
-            'field_types.*' => 'required|exists:field_types,slug',
-            'labels' => 'required|array|min:1',
-            "labels.*"  => "required|string|",
-            'field_select_box_options' => 'sometimes|array',
-            "field_select_box_options.*"  => "required_if:field_types.*,select|string",
-        ]);
+        $validator = Validator::make($request->all(), $this->handleFormValidation());
 
         $field_types = FieldType::pluck('field_type_id', 'slug')->all();
 
@@ -165,7 +157,6 @@ class FormController extends Controller
         $data = [];
         $field_types = FieldType::all();
         $data['field_types'] = $field_types;
-        $data['form_value'] = 1;
         $data['custom_form'] = CustomForm::with(['customFormField.customFormFieldOptions'])
             ->where('custom_form_id', $custom_form_id)
             ->first();
@@ -187,17 +178,10 @@ class FormController extends Controller
         $success = false;
         $message = 'Fail to update the form';
         $data = [];
+        $rules = $this->handleFormValidation();
+        array_push($rules,"'custom_form_id' => 'required|exists:custom_forms,custom_form_id'");
 
-        $validator = Validator::make($request->all(), [
-            'custom_form_id' => 'required|exists:custom_forms,custom_form_id',
-            'form_title' => 'required|string',
-            'field_types' => 'required|array|min:1',
-            'field_types.*' => 'required|exists:field_types,slug',
-            'labels' => 'required|array|min:1',
-            "labels.*"  => "required|string|",
-            'field_select_box_options' => 'sometimes|array',
-            "field_select_box_options.*"  => "required_if:field_types.*,select|string",
-        ]);
+        $validator = Validator::make($request->all(), $rules);
 
         $field_types = FieldType::pluck('field_type_id', 'slug')->all();
 
@@ -268,5 +252,24 @@ class FormController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Form validation rules for store and update
+     *
+     * @param  int  $id
+     * @return array
+     */
+    private function handleFormValidation()
+    {
+       return [
+            'form_title' => 'required|string',
+            'field_types' => 'required|array|min:1',
+            'field_types.*' => 'required|exists:field_types,slug',
+            'labels' => 'required|array|min:1',
+            "labels.*"  => "required|string|",
+            'field_select_box_options' => 'sometimes|array',
+            "field_select_box_options.*"  => "required_if:field_types.*,select|string",
+       ];
     }
 }
