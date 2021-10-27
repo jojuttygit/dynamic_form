@@ -27,12 +27,12 @@
         <div class="col-lg-10 offset-lg-7" id="field-type-properties-{{$form_value}}">
             @if ($custom_form_field->field_type_id == FieldType::SELECT)
                 @php
-                    $text_area = 'test';
+                    $text_area = '';
                     foreach ($custom_form_field->customFormFieldOptions as $key => $option) {
                         $text_area = $text_area . $option->option_value . ',';
                     }
                 @endphp
-                <textarea class="form-control" placeholder="Add options separated ' + 
+                <textarea class="form-control" id="field-select-box-options-{{$form_value}}" placeholder="Add options separated ' + 
                     'by comma" name="field_select_box_options[{{$form_value}}]">{{ rtrim($text_area,',') }}</textarea>
             @endif
         </div>

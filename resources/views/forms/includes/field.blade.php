@@ -24,6 +24,7 @@
     </div>
     <div class="form-group row mt-2">
         <div class="col-lg-10 offset-lg-7" id="field-type-properties-{{$form_value}}">
+            
         </div>
     </div>
 </div>

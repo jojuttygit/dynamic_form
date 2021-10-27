@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomForm as ModelsCustomForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -183,7 +182,81 @@ class FormController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->request->add(['custom_form_id' => $id]);
+
+        $success = false;
+        $message = 'Fail to update the form';
+        $data = [];
+
+        $validator = Validator::make($request->all(), [
+            'custom_form_id' => 'required|exists:custom_forms,custom_form_id',
+            'form_title' => 'required|string',
+            'field_types' => 'required|array|min:1',
+            'field_types.*' => 'required|exists:field_types,slug',
+            'labels' => 'required|array|min:1',
+            "labels.*"  => "required|string|",
+            'field_select_box_options' => 'sometimes|array',
+            "field_select_box_options.*"  => "required_if:field_types.*,select|string",
+        ]);
+
+        $field_types = FieldType::pluck('field_type_id', 'slug')->all();
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => $success,
+                'message' => $message,
+                'errors'  => $validator->errors()
+            ]);
+        }
+
+        $custom_form = CustomForm::find($id);
+
+        try {
+            DB::beginTransaction();
+            $custom_form->name = $request->form_title;
+            $custom_form->save();
+
+            foreach ($custom_form->customFormField as $custom_form_field) {
+                $custom_form_field->customFormFieldOptions()->delete();
+            }
+
+            $custom_form->customFormField()->delete();
+            
+            foreach ($request->labels as $key => $label) {
+                $custom_form_fields = new CustomFormField;
+                $custom_form_fields->custom_form_id = $custom_form->custom_form_id;
+                $custom_form_fields->field_type_id = $field_types[$request->field_types[$key]];
+                $custom_form_fields->label = $label;
+                $custom_form_fields->save();
+
+                if ($custom_form_fields->field_type_id == FieldType::SELECT) {
+                    $select_box_options = explode(",", $request->field_select_box_options[$key]);
+
+                    foreach ($select_box_options as $option) {
+                        $custom_form_field_option = new CustomFormFieldOption;
+                        $custom_form_field_option->custom_form_field_id = $custom_form_fields->custom_form_field_id;
+                        $custom_form_field_option->option_value = $option;
+                        $custom_form_field_option->save();
+                    }
+                }
+            }
+
+            DB::commit();
+            $success = true;
+            $data = [
+                'form_id' => $custom_form->custom_form_id
+            ];
+            $message = 'Form successfully updated';
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error($message, $request->all());
+        }
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ]);
     }
 
     /**

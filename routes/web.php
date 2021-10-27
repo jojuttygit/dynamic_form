@@ -22,5 +22,5 @@ Auth::routes();
 
 Route::get('public/show-form/{custom_form_id}', [PublicController::class, 'showForm'])->name('public.show-form');
 
-Route::get('forms/create-field', [FormController::class, 'createField']);
+Route::get('forms/create-field', [FormController::class, 'createField'])->name('forms.create-field');
 Route::resource('forms', FormController::class);

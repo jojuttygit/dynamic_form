@@ -52,7 +52,7 @@
             let field_count = $(".form-field-label").last().attr('id');
             $.ajax({
                 type: 'GET',
-                url: 'create-field',
+                url: "{{route('forms.create-field')}}",
                 data: {'form_value' : parseInt(field_count) + 1},
                 success: function (response) {
                     $('#dynamic-field').append(response);
@@ -107,7 +107,7 @@
             position: 'top-end',
             icon: icon_type,
             title: title,
-            showConfirmButton: confirm,
+            showConfirmButton: false,
             timer: 2000
         })
     }
